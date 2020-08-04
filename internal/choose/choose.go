@@ -21,14 +21,11 @@ func (ch Choose) Choose(options []string) (string, error) {
 	gc.CBreak(true)
 	gc.Cursor(0)
 	stdscr.NoutRefresh()
+	_ = gc.UseDefaultColors()
 	_ = gc.StartColor()
 
-	_ = gc.InitPair(1, gc.C_WHITE, gc.C_BLACK)
-	_ = gc.InitPair(2, gc.C_YELLOW, gc.C_BLACK)
-	_ = gc.InitPair(3, gc.C_MAGENTA, gc.C_BLACK)
-	_ = gc.InitPair(4, gc.C_RED, gc.C_BLACK)
-	_ = gc.InitPair(5, gc.C_BLUE, gc.C_BLACK)
-	_ = gc.InitPair(6, gc.C_GREEN, gc.C_BLACK)
+	_ = gc.InitPair(1, gc.C_WHITE, -1)
+	_ = gc.InitPair(2, gc.C_YELLOW, -1)
 
 	rows, cols := stdscr.MaxYX()
 	var win *gc.Window
@@ -45,11 +42,11 @@ func (ch Choose) Choose(options []string) (string, error) {
 			if i == ind {
 				win.Move(r+i, c)
 				_ = win.ColorOn(int16(2))
-				win.Print(options[i] + "            ")
+				win.Print(options[i])
 			} else {
 				win.Move(r+i, c)
 				_ = win.ColorOn(1)
-				win.Print(options[i] + "            ")
+				win.Print(options[i])
 			}
 		}
 		win.Refresh()
