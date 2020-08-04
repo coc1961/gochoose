@@ -13,6 +13,9 @@ type Choose struct {
 }
 
 func (ch Choose) Choose(options []string) (string, error) {
+	if len(options) == 0 {
+		return "", nil
+	}
 	stdscr, err := gc.Init()
 	if err != nil {
 		return "", err
