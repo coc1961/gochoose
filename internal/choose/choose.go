@@ -16,6 +16,8 @@ type Choose struct {
 }
 
 func (ch Choose) Close() {
+	ch.term.Cls()
+	ch.term.Flush()
 	ch.term.Close()
 }
 
@@ -60,5 +62,9 @@ func (ch Choose) Choose(options []string) (string, error) {
 	})
 
 	<-exit
+
+	ch.term.Reset().Print("\033[2J")
+	ch.term.Flush()
+
 	return options[ind], nil
 }

@@ -20,6 +20,6 @@ func main() {
 		options = append(options, line)
 	}
 	x, _ := ch.Choose(options)
-	fmt.Print(x)
 	ch.Close()
+	fmt.Print(x)
 }
