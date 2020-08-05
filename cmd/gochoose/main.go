@@ -24,4 +24,7 @@ func main() {
 		return
 	}
 	fmt.Print(x)
+	if x == "" {
+		os.Exit(1)
+	}
 }
