@@ -201,7 +201,7 @@ func (a *Terminal) TerminalSize() (int, int, error) {
 
 	ws := &winsize{}
 	retCode, _, errno := syscall.Syscall(syscall.SYS_IOCTL,
-		uintptr(syscall.Stdin),
+		uintptr(syscall.Stderr),
 		uintptr(syscall.TIOCGWINSZ),
 		uintptr(unsafe.Pointer(ws)))
 

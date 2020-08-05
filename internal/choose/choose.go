@@ -25,16 +25,27 @@ func (ch Choose) Choose(options []string) (string, error) {
 	ind := 0
 	exit := make(chan bool)
 	r1, c1 := ch.term.CursorPos()
-	r, c := 1, 1
-
+	rows, _, _ := ch.term.TerminalSize()
 	print := func() {
 		ch.term.Cls()
+		w := 0
+		r, c := 1, 1
 		for i := 0; i < len(options); i++ {
 			if i == ind {
-				ch.term.Goto(r+i, c).Yellow().Print(options[i] + "            ")
+				ch.term.Goto(r, c).Yellow().Print(options[i] + "            ")
 			} else {
-				ch.term.Goto(r+i, c).Reset().Print(options[i] + "            ")
+				ch.term.Goto(r, c).Reset().Print(options[i] + "            ")
 			}
+			if len(options[i]) > w {
+				w = len(options[i])
+			}
+			r++
+			if r >= rows-1 {
+				r = 1
+				c += w + 10
+				w = 0
+			}
+
 		}
 		ch.term.Goto(r1, c1).Reset().Flush()
 	}
@@ -63,7 +74,7 @@ func (ch Choose) Choose(options []string) (string, error) {
 
 	<-exit
 
-	ch.term.Reset().Print("\033[2J")
+	ch.term.Reset().Cls()
 	ch.term.Flush()
 
 	return options[ind], nil
