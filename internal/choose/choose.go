@@ -1,8 +1,8 @@
 package choose
 
 import (
+	gc "github.com/coc1961/gochoose/internal/goncurses"
 	"github.com/coc1961/gochoose/internal/keyboard"
-	gc "github.com/rthornton128/goncurses"
 )
 
 func New() Choose {
@@ -36,20 +36,31 @@ func (ch Choose) Choose(options []string) (string, error) {
 	if err != nil {
 		return "", err
 	}
+
 	_ = gc.Update()
 	ind := 0
-	r, c := 1, 1
 	print := func() {
 		_ = win.Clear()
+		w := 0
+		r, c := 1, 1
 		for i := 0; i < len(options); i++ {
 			if i == ind {
-				win.Move(r+i, c)
+				win.Move(r, c)
 				_ = win.ColorOn(int16(2))
 				win.Print(options[i])
 			} else {
-				win.Move(r+i, c)
+				win.Move(r, c)
 				_ = win.ColorOn(1)
 				win.Print(options[i])
+			}
+			if len(options[i]) > w {
+				w = len(options[i])
+			}
+			r++
+			if r >= rows-1 {
+				r = 1
+				c += w + 10
+				w = 0
 			}
 		}
 		win.Refresh()
