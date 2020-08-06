@@ -11,7 +11,7 @@ Select yes or no in shell script
 
 
 
-select an change dir interactively
+select and change dir interactively
 
 cd `ls -d -1 */ | gochoose`
 
