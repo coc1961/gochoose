@@ -1,31 +1,40 @@
 package choose
 
 import (
+	"errors"
+
 	"github.com/coc1961/gochoose/internal/gui"
 	"github.com/coc1961/gochoose/internal/gui/keyboard"
 )
 
-func New() Choose {
-	return Choose{
+func New() *Choose {
+	return &Choose{
 		term: gui.NewTerminal(),
 	}
 }
 
 type Choose struct {
-	term *gui.Terminal
+	term     *gui.Terminal
+	selected string
 }
 
-func (ch Choose) Close() {
-	ch.term.Cls()
-	ch.term.Flush()
-	ch.term.Close()
+func (ch *Choose) SetSelected(s string) {
+	ch.selected = s
 }
 
-func (ch Choose) Choose(options []string) (string, error) {
+func (ch *Choose) Choose(options []string) (string, error) {
 	ind := 0
-	exit := make(chan bool)
+	exit := make(chan error)
 	r1, c1 := ch.term.CursorPos()
 	rows, _, _ := ch.term.TerminalSize()
+
+	if ch.selected != "" {
+		for i, o := range options {
+			if o == ch.selected {
+				ind = i
+			}
+		}
+	}
 	print := func() {
 		ch.term.Cls()
 		w := 0
@@ -58,9 +67,9 @@ func (ch Choose) Choose(options []string) (string, error) {
 		case keyboard.KeyArrowDown:
 			ind++
 		case keyboard.KeyEnter:
-			exit <- true
+			exit <- nil
 		case keyboard.KeyEsc:
-			exit <- true
+			exit <- errors.New("esc pressed")
 		}
 
 		if ind < 0 {
@@ -72,10 +81,11 @@ func (ch Choose) Choose(options []string) (string, error) {
 		print()
 	})
 
-	<-exit
+	err := <-exit
 
 	ch.term.Reset().Cls()
 	ch.term.Flush()
+	ch.term.Close()
 
-	return options[ind], nil
+	return options[ind], err
 }

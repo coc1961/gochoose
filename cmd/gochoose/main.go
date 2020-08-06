@@ -9,8 +9,6 @@ import (
 )
 
 func main() {
-	ch := choose.New()
-	defer ch.Close()
 
 	scanner := bufio.NewScanner(os.Stdin)
 
@@ -19,7 +17,17 @@ func main() {
 		line := scanner.Text()
 		options = append(options, line)
 	}
-	x, _ := ch.Choose(options)
-	ch.Close()
+	if len(options) == 0 {
+		return
+	}
+
+	ch := choose.New()
+	if len(os.Args) > 1 {
+		ch.SetSelected(os.Args[1])
+	}
+	x, err := ch.Choose(options)
+	if err != nil {
+		os.Exit(1)
+	}
 	fmt.Print(x)
 }
