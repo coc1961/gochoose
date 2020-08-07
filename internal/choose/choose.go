@@ -42,10 +42,11 @@ func (ch *Choose) Choose(options []string) (string, error) {
 		r, c := 1, 1
 		for i := 0; i < len(options); i++ {
 			if i == ind {
-				ch.term.Goto(r, c).Yellow().Print(options[i] + "            ")
+				ch.term.Goto(r, c).Yellow().Print(options[i])
 			} else {
-				ch.term.Goto(r, c).Reset().Print(options[i] + "            ")
+				ch.term.Goto(r, c).Reset().Print(options[i])
 			}
+			ch.term.Reset()
 			if len(options[i]) > w {
 				w = len(options[i])
 			}
@@ -90,9 +91,9 @@ func (ch *Choose) Choose(options []string) (string, error) {
 
 	err := <-exit
 
-	ch.term.Reset().Cls()
+	ch.term.Reset().Cls().Cls()
 	ch.term.Flush()
-	ch.term.Close()
+	// defer ch.term.Close()
 
 	cmd := exec.Command("reset")
 	_ = cmd.Start()
