@@ -2,6 +2,7 @@ package choose
 
 import (
 	"errors"
+	"os/exec"
 
 	"github.com/coc1961/gochoose/internal/gui"
 	"github.com/coc1961/gochoose/internal/gui/keyboard"
@@ -64,8 +65,14 @@ func (ch *Choose) Choose(options []string) (string, error) {
 		switch key.Key {
 		case keyboard.KeyArrowUp:
 			ind--
+			if key.Ctrl {
+				ind -= 5
+			}
 		case keyboard.KeyArrowDown:
 			ind++
+			if key.Ctrl {
+				ind += 5
+			}
 		case keyboard.KeyEnter:
 			exit <- nil
 		case keyboard.KeyEsc:
@@ -87,5 +94,8 @@ func (ch *Choose) Choose(options []string) (string, error) {
 	ch.term.Flush()
 	ch.term.Close()
 
+	cmd := exec.Command("reset")
+	_ = cmd.Start()
+	_ = cmd.Wait()
 	return options[ind], err
 }
