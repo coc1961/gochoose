@@ -2,7 +2,9 @@ package choose
 
 import (
 	"errors"
-	"os/exec"
+	"os"
+	"strings"
+	"time"
 
 	"github.com/coc1961/gochoose/internal/gui"
 	"github.com/coc1961/gochoose/internal/gui/keyboard"
@@ -27,7 +29,7 @@ func (ch *Choose) Choose(options []string) (string, error) {
 	ind := 0
 	exit := make(chan error)
 	r1, c1 := ch.term.CursorPos()
-	rows, _, _ := ch.term.TerminalSize()
+	rows, cols, _ := ch.term.TerminalSize()
 
 	if ch.selected != "" {
 		for i, o := range options {
@@ -55,6 +57,9 @@ func (ch *Choose) Choose(options []string) (string, error) {
 				r = 1
 				c += w + 10
 				w = 0
+				if c+w+10 >= cols {
+					break
+				}
 			}
 
 		}
@@ -91,12 +96,21 @@ func (ch *Choose) Choose(options []string) (string, error) {
 
 	err := <-exit
 
-	ch.term.Reset().Cls().Cls()
+	ch.term.Reset()
 	ch.term.Flush()
-	// defer ch.term.Close()
+	ch.term.Close()
 
-	cmd := exec.Command("reset")
-	_ = cmd.Start()
-	_ = cmd.Wait()
+	time.Sleep(time.Millisecond * 500)
+
+	line := strings.Repeat(" ", cols*2)
+	for i := 0; i < rows; i++ {
+		os.Stderr.WriteString(line)
+	}
+
+	/*
+		cmd := exec.Command("reset")
+		_ = cmd.Start()
+		_ = cmd.Wait()
+	*/
 	return options[ind], err
 }
